@@ -1,6 +1,7 @@
 import pygame,sys,time,random,math,sqlite3
 from pygame.locals import *
 
+pname=input("GIVE YOUR NAME HERE:")
 pygame.init()
 conn=sqlite3.connect('score.db')
 name=[];score=[]
@@ -27,10 +28,6 @@ tr1=pygame.image.load('tr1l.jpg')
 tr2=pygame.image.load('tr1r.jpg')
 tr3=pygame.image.load('tr2l.jpg')
 tr4=pygame.image.load('tr2r.jpg')
-#crash_sound=pygame.mixer.Sound('car_crash.wav')
-#running_sound=pygame.mixer.Sound('car_running.wav')
-pname=input("GIVE YOUR NAME HERE:")
-print("NOW YOU CAN SWITCH TO THE GAME")
 myfont=pygame.font.SysFont('Segoe Print',26,bold=True,italic=False)
 scorefont=pygame.font.SysFont('Segoe Print',20,bold=True,italic=False)
 timefont=pygame.font.SysFont('Segoe Print',100,bold=True,italic=False)
