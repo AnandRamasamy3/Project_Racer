@@ -1,7 +1,7 @@
 import pygame,sys,time,random,math,sqlite3
 from pygame.locals import *
 
-pname=input("GIVE YOUR NAME HERE:")
+#input
 pygame.init()
 conn=sqlite3.connect('score.db')
 name=[];score=[]
@@ -157,35 +157,37 @@ def target(tar,tx,ty,speed):
 	ty+=speed
 	disp.blit(tar,(tx,ty))
 	return ty
+def sort_with_score(dl):
+	#print("\n\n\n",dl)
+	l=[]
+	for i in dl:
+		l.append([i,dl[i]])
+	for i in range(len(l)):
+		for j in range(i,len(l)):
+			if l[i][1]<l[j][1]:
+				temp=l[i]
+				l[i]=l[j]
+				l[j]=temp
+	dl={}
+	#print(l)
+	for i in l:
+		#print(i[0],i[1])
+		dl.update({i[0]:i[1]})
+	return dl
 def check_score(pname,pscore):
-	scores=[];names=[]
-	tscores=[];tnames=[]
 	scores1=[];names1=[]
-	temp1=0;loc=0;s1=0;fin_score={}
-	cursor=conn.execute("SELECT * from high;")
-	for row in cursor:
-		names.append(row[0])
-		scores.append(row[1])
-	for i in range(0,len(scores)):
-		if pscore<scores[i]:
-			loc=i+1
-			s1=1
-	for i in range(loc,len(scores)):
-		tnames.append(names[i])
-		tscores.append(scores[i])
-		cur.execute("DELETE from high where name=(?);",(names[i]))
+	fin_score={}
 	cur.execute("INSERT into high values(?,?);",(pname,pscore))
-	for i in range(0,len(tscores)):
-		cur.execute("INSERT into high values(?,?);",(tnames[i],tscores[i]))
-		
-	print("\n\n")
 	cursor=conn.execute("SELECT * from high;")
 	for row in cursor:
 		names1.append(row[0])
 		scores1.append(row[1])
-	for i in range(0,len(scores1)):
-		#print (names1[i],scores1[i])
+	for i in range(len(scores1)):
+		#print("\n\n",names1[i],scores1[i])
 		fin_score.update({names1[i]:scores1[i]})
+	#print(fin_score)
+	fin_score=sort_with_score(fin_score)
+	#print(fin_score)
 	conn.commit()
 	return fin_score
 def score_card(level,score,life,highscore):
@@ -228,6 +230,7 @@ def crash(name,score):
 	black=(0,0,0);grey=(128,128,128,128);green=(0,128,0)
 	white=(255,255,255);blue=(0,0,128);key="n"
 	fin_score=check_score(name,score)
+	#print("\n\n\n",fin_score)
 	while True:
 		disp.blit(bg,(0,0))
 		textsurface7=myfont.render("click p to restart",False,(white))
@@ -239,6 +242,9 @@ def crash(name,score):
 			length=len(fin_score)
 		else:
 			length=5
+		#print(fin_score)
+		fin_score=sort_with_score(fin_score)
+		#print(fin_score)
 		for i in range(0,length):
 			lk=list(fin_score.keys())
 			lv=list(fin_score.values())
@@ -270,7 +276,7 @@ def crash(name,score):
 			ty=[-200,-1000,-600,-1500]
 			crashed=False;speed=5;lev=1;life=3
 			highscore=lv[0]
-			pname=input("GIVE YOUR NAME HERE:")
+			pname=get_name(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore)
 			play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,pname)
 		pygame.display.update()
 		ft.tick(fps)
@@ -281,7 +287,7 @@ def restart(highscore):
 	t1=-60;t2=-600;t3=-1100;t4=-1800
 	ty=[-200,-1000,-600,-1500]
 	crashed=False;speed=5;lev=1;life=3
-	pname=input("GIVE YOUR NAME HERE:")
+	pname=get_name(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore)
 	play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,pname)
 def play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,name):
 	while crashed==False:
@@ -361,5 +367,71 @@ def play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,name)
 			time.sleep(0.5)
 		pygame.display.update()
 		ft.tick(fps)
+def get_name(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore):
+	get=True
+	name=""
+	textsurface_get=myfont.render("enter your name to continue...",False,white)
+	while get:
+		disp.blit(bg,(0,0))
+		textsurface_name=myfont.render(name,False,white)
+		disp.blit(textsurface_get,(20,200))
+		disp.blit(textsurface_name,(20,250))
+		for event in pygame.event.get():
+			if event.type==QUIT:
+				pygame.quit()
+				sys.exit()
+			if event.type==KEYDOWN:
+				if event.key==pygame.K_a and len(name)<6:name+="a"
+				if event.key==pygame.K_b and len(name)<6:name+="b"
+				if event.key==pygame.K_c and len(name)<6:name+="c"
+				if event.key==pygame.K_d and len(name)<6:name+="d"
+				if event.key==pygame.K_e and len(name)<6:name+="e"
+				if event.key==pygame.K_f and len(name)<6:name+="f"
+				if event.key==pygame.K_g and len(name)<6:name+="g"
+				if event.key==pygame.K_h and len(name)<6:name+="h"
+				if event.key==pygame.K_i and len(name)<6:name+="i"
+				if event.key==pygame.K_j and len(name)<6:name+="j"
+				if event.key==pygame.K_k and len(name)<6:name+="k"
+				if event.key==pygame.K_l and len(name)<6:name+="l"
+				if event.key==pygame.K_m and len(name)<6:name+="m"
+				if event.key==pygame.K_n and len(name)<6:name+="n"
+				if event.key==pygame.K_o and len(name)<6:name+="o"
+				if event.key==pygame.K_p and len(name)<6:name+="p"
+				if event.key==pygame.K_q and len(name)<6:name+="q"
+				if event.key==pygame.K_r and len(name)<6:name+="r"
+				if event.key==pygame.K_s and len(name)<6:name+="s"
+				if event.key==pygame.K_t and len(name)<6:name+="t"
+				if event.key==pygame.K_u and len(name)<6:name+="u"
+				if event.key==pygame.K_v and len(name)<6:name+="v"
+				if event.key==pygame.K_w and len(name)<6:name+="w"
+				if event.key==pygame.K_x and len(name)<6:name+="x"
+				if event.key==pygame.K_y and len(name)<6:name+="y"
+				if event.key==pygame.K_z and len(name)<6:name+="z"
+				if event.key==pygame.K_0 and len(name)<6:name+="0"
+				if event.key==pygame.K_1 and len(name)<6:name+="1"
+				if event.key==pygame.K_2 and len(name)<6:name+="2"
+				if event.key==pygame.K_3 and len(name)<6:name+="3"
+				if event.key==pygame.K_4 and len(name)<6:name+="4"
+				if event.key==pygame.K_5 and len(name)<6:name+="5"
+				if event.key==pygame.K_6 and len(name)<6:name+="6"
+				if event.key==pygame.K_7 and len(name)<6:name+="7"
+				if event.key==pygame.K_8 and len(name)<6:name+="8"
+				if event.key==pygame.K_9 and len(name)<6:name+="9"
+				if event.key==pygame.K_F10:
+					pygame.quit()
+					sys.exit()
+				if event.key==pygame.K_RETURN:
+					if len(name)>0:
+						get=False
+				if event.key==pygame.K_BACKSPACE:
+					temp_list=list(name)
+					if len(temp_list)>0:
+						temp_list.pop()
+						name=""
+						for character in temp_list:
+							name+=character
+		pygame.display.update()
+		ft.tick(fps)
+	play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,name)
 key=home(key)
-if key=="y":play(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore,pname)
+if key=="y":get_name(x,y,pos,a1,b1,tim,t1,t2,t3,t4,ty,crashed,speed,lev,life,highscore)
